@@ -1,10 +1,13 @@
 [package]
-name = "egui"
+name = "custom_3d_glow"
 version = "0.1.0"
+authors = ["Emil Ernerfeldt <emil.ernerfeldt@gmail.com>"]
+license = "MIT OR Apache-2.0"
 edition = "2021"
+rust-version = "1.72"
+publish = false
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-eframe = "0.25.0"
-egui-winit = "0.25.0"
+eframe = { version = "0.25.0" }
+env_logger = { version = "0.11.0" }
