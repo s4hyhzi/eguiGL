@@ -63,6 +63,25 @@ impl MyApp {
             age: 42,
         }
     }
+
+    fn custom_painting(&mut self, ui: &mut egui::Ui) {
+        let (rect, response) =
+            ui.allocate_exact_size(egui::Vec2::splat(300.0), egui::Sense::drag());
+
+        self.angle += response.drag_delta().x * 0.01;
+
+        // Clone locals so we can move them into the paint callback:
+        let angle = self.angle;
+        let rotating_triangle = self.rotating_triangle.clone();
+
+        let callback = egui::PaintCallback {
+            rect,
+            callback: std::sync::Arc::new(egui_glow::CallbackFn::new(move |_info, painter| {
+                rotating_triangle.lock().paint(painter.gl(), angle);
+            })),
+        };
+        ui.painter().add(callback);
+    }
 }
 
 impl eframe::App for MyApp {
@@ -91,27 +110,6 @@ impl eframe::App for MyApp {
         if let Some(gl) = gl {
             self.rotating_triangle.lock().destroy(gl);
         }
-    }
-}
-
-impl MyApp {
-    fn custom_painting(&mut self, ui: &mut egui::Ui) {
-        let (rect, response) =
-            ui.allocate_exact_size(egui::Vec2::splat(300.0), egui::Sense::drag());
-
-        self.angle += response.drag_delta().x * 0.01;
-
-        // Clone locals so we can move them into the paint callback:
-        let angle = self.angle;
-        let rotating_triangle = self.rotating_triangle.clone();
-
-        let callback = egui::PaintCallback {
-            rect,
-            callback: std::sync::Arc::new(egui_glow::CallbackFn::new(move |_info, painter| {
-                rotating_triangle.lock().paint(painter.gl(), angle);
-            })),
-        };
-        ui.painter().add(callback);
     }
 }
 
