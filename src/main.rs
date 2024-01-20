@@ -1,14 +1,21 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 #![allow(unsafe_code)]
 
-use eframe::{egui, egui_glow, glow};
+use eframe::{egui, egui_glow, epaint::Vec2, glow};
 
 use egui::mutex::Mutex;
 use std::sync::Arc;
 
 fn main() -> Result<(), eframe::Error> {
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
-    let options = eframe::NativeOptions::default();
+    let options = eframe::NativeOptions {
+        // Let's show off that we support transparency:
+        viewport: egui::ViewportBuilder {
+            min_inner_size: Some(Vec2::new(1366.0, 768.0)),
+            ..Default::default()
+        },
+        ..Default::default()
+    };
     eframe::run_native(
         "Egui+GL学习",
         options,
@@ -120,7 +127,7 @@ impl RotatingTriangle {
         let shader_version = "#version 330".to_string();
 
         unsafe {
-            let program = gl.create_program().expect("Cannot create program");
+            let program = gl.create_program().expect("无法创建着色器程序");
 
             let (vertex_shader_source, fragment_shader_source) = (
                 r#"
@@ -160,9 +167,7 @@ impl RotatingTriangle {
             let shaders: Vec<_> = shader_sources
                 .iter()
                 .map(|(shader_type, shader_source)| {
-                    let shader = gl
-                        .create_shader(*shader_type)
-                        .expect("Cannot create shader");
+                    let shader = gl.create_shader(*shader_type).expect("无法创建着色器");
                     gl.shader_source(shader, &format!("{shader_version}\n{shader_source}"));
                     gl.compile_shader(shader);
                     assert!(
@@ -187,9 +192,7 @@ impl RotatingTriangle {
                 gl.delete_shader(shader);
             }
 
-            let vertex_array = gl
-                .create_vertex_array()
-                .expect("Cannot create vertex array");
+            let vertex_array = gl.create_vertex_array().expect("无法创建顶点数组对象");
 
             Self {
                 program,
