@@ -10,6 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         renderer: eframe::Renderer::Glow,
         viewport: egui::ViewportBuilder {
             min_inner_size: Some(Vec2::new(768.0, 768.0)),
+            inner_size: Some(Vec2 { x: 768.0, y: 768.0 }),
             ..Default::default()
         },
         ..Default::default()
