@@ -46,7 +46,7 @@ impl eframe::App for App {
                 gl,
                 [vertex_shader.unwrap(), fragment_shader.unwrap()].iter(),
             );
-            gl.use_program(Some(program.unwrap()));
+            gl.use_program(Some(program.clone().unwrap()));
             let vertex_array = gl.create_vertex_array().unwrap();
             gl.bind_vertex_array(Some(vertex_array));
 
@@ -89,6 +89,10 @@ impl eframe::App for App {
                 0,           // offset
             );
             gl.enable_vertex_attrib_array(0);
+
+            let u_color = gl.get_uniform_location(program.unwrap(), "u_color");
+            
+            gl.uniform_4_f32(u_color.as_ref(), 1.0, 1.0, 1.0, 1.0);
 
             gl.viewport(0, 0, 768, 768);
             gl.clear_color(0.0, 0.0, 0.0, 0.0); // purple

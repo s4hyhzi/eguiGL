@@ -1,3 +1,4 @@
+workspace = { members = ["egui_glow"] }
 [package]
 name = "custom_3d_glow"
 version = "0.1.0"

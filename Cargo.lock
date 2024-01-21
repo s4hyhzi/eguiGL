@@ -867,7 +867,7 @@ dependencies = [
  "cocoa",
  "egui",
  "egui-winit",
- "egui_glow",
+ "egui_glow 0.25.0",
  "glow",
  "glutin",
  "glutin-winit",
@@ -916,6 +916,10 @@ dependencies = [
  "webbrowser",
  "winit",
 ]
+
+[[package]]
+name = "egui_glow"
+version = "0.1.0"
 
 [[package]]
 name = "egui_glow"
