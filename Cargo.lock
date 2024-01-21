@@ -799,14 +799,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "96a6ac251f4a2aca6b3f91340350eab87ae57c3f127ffeb585e92bd336717991"
 
 [[package]]
-name = "custom_3d_glow"
-version = "0.1.0"
-dependencies = [
- "eframe",
- "env_logger",
-]
-
-[[package]]
 name = "derivative"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -867,7 +859,7 @@ dependencies = [
  "cocoa",
  "egui",
  "egui-winit",
- "egui_glow 0.25.0",
+ "egui_glow",
  "glow",
  "glutin",
  "glutin-winit",
@@ -916,10 +908,6 @@ dependencies = [
  "webbrowser",
  "winit",
 ]
-
-[[package]]
-name = "egui_glow"
-version = "0.1.0"
 
 [[package]]
 name = "egui_glow"
@@ -1246,6 +1234,14 @@ dependencies = [
  "cfg-if",
  "libc",
  "wasi",
+]
+
+[[package]]
+name = "gl"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "env_logger",
 ]
 
 [[package]]
@@ -1916,9 +1912,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.76"
+version = "1.0.78"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95fc56cda0b5c3325f5fbbd7ff9fda9e02bb00bb3dac51252d2f1bfa1cb8cc8c"
+checksum = "e2422ad645d89c99f8f3e6b88a9fdeca7fabeac836b1002371c4367c8f984aae"
 dependencies = [
  "unicode-ident",
 ]

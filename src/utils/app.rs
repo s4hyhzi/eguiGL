@@ -50,13 +50,6 @@ impl eframe::App for App {
             let vertex_array = gl.create_vertex_array().unwrap();
             gl.bind_vertex_array(Some(vertex_array));
 
-            let positions: Vec<f32> = vec![
-                0.5, 0.5, 0.0, // 右上角
-                0.5, -0.5, 0.0, // 右下角
-                -0.5, -0.5, 0.0, // 左下角
-                -0.5, 0.5, 0.0, // 左上角
-            ];
-
             let indices:Vec<i32> = vec![0, 1, 3, 1, 2, 3];
 
             let indices_buffer = gl.create_buffer().unwrap();
@@ -70,6 +63,13 @@ impl eframe::App for App {
                 glow::STATIC_DRAW,
             );
 
+
+            let positions: Vec<f32> = vec![
+                0.5, 0.5,
+                0.5, -0.5,
+                -0.5, -0.5,
+                -0.5, 0.5,
+            ];
             let positions_buffer = gl.create_buffer().unwrap();
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(positions_buffer));
             gl.buffer_data_u8_slice(
@@ -82,7 +82,7 @@ impl eframe::App for App {
             );
             gl.vertex_attrib_pointer_f32(
                 0,           // index
-                3,           // size
+                2,           // size
                 glow::FLOAT, // type
                 false,       // normalized
                 0,           // stride
@@ -90,17 +90,39 @@ impl eframe::App for App {
             );
             gl.enable_vertex_attrib_array(0);
 
+            let colors: Vec<f32> = vec![
+                1.0, 0.0, 0.0, 1.0, // red
+                0.0, 1.0, 0.0, 1.0, // green
+                0.0, 0.0, 1.0, 1.0, // blue
+                1.0, 1.0, 0.0, 1.0, // yellow
+            ];
+            let colors_buffer = gl.create_buffer().unwrap();
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(colors_buffer));
+            gl.buffer_data_u8_slice(
+                glow::ARRAY_BUFFER,
+                std::slice::from_raw_parts(
+                    colors.as_ptr() as *const u8,
+                    colors.len() * std::mem::size_of::<f32>(),
+                ),
+                glow::STATIC_DRAW,
+            );
+            gl.vertex_attrib_pointer_f32(
+                1,           // index
+                4,           // size
+                glow::FLOAT, // type
+                false,       // normalized
+                0,           // stride
+                0,           // offset
+            );
+            gl.enable_vertex_attrib_array(1);
+
             let u_color = gl.get_uniform_location(program.unwrap(), "u_color");
-            
-            gl.uniform_4_f32(u_color.as_ref(), 1.0, 1.0, 1.0, 1.0);
+            gl.uniform_4_f32(u_color.as_ref(), 0.5, 1.0, 1.0, 1.0);
 
             gl.viewport(0, 0, 768, 768);
             gl.clear_color(0.0, 0.0, 0.0, 0.0); // purple
             gl.clear(glow::COLOR_BUFFER_BIT);
-            
-            // gl.draw_arrays(glow::TRIANGLES, 0, 3);
 
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(indices_buffer));
             gl.draw_elements(glow::TRIANGLES, 6, glow::UNSIGNED_INT, 0);
         }
 
