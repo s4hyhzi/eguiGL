@@ -122,7 +122,7 @@ impl eframe::App for App {
             gl.enable_vertex_attrib_array(1);
 
             let u_color = gl.get_uniform_location(program.unwrap(), "u_color");
-            gl.uniform_4_f32(u_color.as_ref(), 0.5, 1.0, 1.0, 1.0);
+            gl.uniform_4_f32(u_color.as_ref(), 1.0, 1.0, 1.0, 1.0);
 
             gl.viewport(0, 0, 768, 768);
             gl.clear_color(0.0, 0.0, 0.0, 0.0); // purple
