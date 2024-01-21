@@ -9,7 +9,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Glow,
         viewport: egui::ViewportBuilder {
-            min_inner_size: Some(Vec2::new(1366.0, 768.0)),
+            min_inner_size: Some(Vec2::new(768.0, 768.0)),
             ..Default::default()
         },
         ..Default::default()
