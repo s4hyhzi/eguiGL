@@ -50,11 +50,25 @@ impl eframe::App for App {
             let vertex_array = gl.create_vertex_array().unwrap();
             gl.bind_vertex_array(Some(vertex_array));
 
-            let positions:Vec<f32> = vec![
-                0.0, 0.5, 0.0, // top
-                -0.5, -0.5, 0.0, // left
-                0.5, -0.5, 0.0, // right
+            let positions: Vec<f32> = vec![
+                0.5, 0.5, 0.0, // 右上角
+                0.5, -0.5, 0.0, // 右下角
+                -0.5, -0.5, 0.0, // 左下角
+                -0.5, 0.5, 0.0, // 左上角
             ];
+
+            let indices:Vec<i32> = vec![0, 1, 3, 1, 2, 3];
+
+            let indices_buffer = gl.create_buffer().unwrap();
+            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(indices_buffer));
+            gl.buffer_data_u8_slice(
+                glow::ELEMENT_ARRAY_BUFFER,
+                std::slice::from_raw_parts(
+                    indices.as_ptr() as *const u8,
+                    indices.len() * std::mem::size_of::<i32>(),
+                ),
+                glow::STATIC_DRAW,
+            );
 
             let positions_buffer = gl.create_buffer().unwrap();
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(positions_buffer));
@@ -67,20 +81,23 @@ impl eframe::App for App {
                 glow::STATIC_DRAW,
             );
             gl.vertex_attrib_pointer_f32(
-                0, // index
-                3, // size
+                0,           // index
+                3,           // size
                 glow::FLOAT, // type
-                false, // normalized
-                0, // stride
-                0, // offset
+                false,       // normalized
+                0,           // stride
+                0,           // offset
             );
             gl.enable_vertex_attrib_array(0);
-
 
             gl.viewport(0, 0, 768, 768);
             gl.clear_color(0.0, 0.0, 0.0, 0.0); // purple
             gl.clear(glow::COLOR_BUFFER_BIT);
-            gl.draw_arrays(glow::TRIANGLES, 0, 3);
+            
+            // gl.draw_arrays(glow::TRIANGLES, 0, 3);
+
+            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(indices_buffer));
+            gl.draw_elements(glow::TRIANGLES, 6, glow::UNSIGNED_INT, 0);
         }
 
         egui::Window::new("浮动窗口").show(ctx, |ui| {
