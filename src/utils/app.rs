@@ -50,7 +50,7 @@ impl eframe::App for App {
             let vertex_array = gl.create_vertex_array().unwrap();
             gl.bind_vertex_array(Some(vertex_array));
 
-            let indices:Vec<i32> = vec![0, 1, 3, 1, 2, 3];
+            let indices: Vec<i32> = vec![0, 1, 3, 1, 2, 3];
 
             let indices_buffer = gl.create_buffer().unwrap();
             gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(indices_buffer));
@@ -63,13 +63,7 @@ impl eframe::App for App {
                 glow::STATIC_DRAW,
             );
 
-
-            let positions: Vec<f32> = vec![
-                0.5, 0.5,
-                0.5, -0.5,
-                -0.5, -0.5,
-                -0.5, 0.5,
-            ];
+            let positions: Vec<f32> = vec![0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5];
             let positions_buffer = gl.create_buffer().unwrap();
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(positions_buffer));
             gl.buffer_data_u8_slice(
@@ -90,19 +84,30 @@ impl eframe::App for App {
             );
             gl.enable_vertex_attrib_array(0);
 
-            let colors: Vec<f32> = vec![
-                1.0, 0.0, 0.0, 1.0, // red
-                0.0, 1.0, 0.0, 1.0, // green
-                0.0, 0.0, 1.0, 1.0, // blue
-                1.0, 1.0, 0.0, 1.0, // yellow
+            let colors = vec![
+                255, 255, 255, 255, 0, 255, 120, 255, 120, 122, 255, 255, 255, 255, 0, 255,
             ];
+            // 检查颜色数组的长度是否是4的倍数
+            assert!(
+                colors.len() % 4 == 0,
+                "Colors array length should be a multiple of 4."
+            );
+
+            // 将整数颜色值转换为Vec4数组，归一化到0.0到1.0的范围
+            let normalized_colors: Vec<f32> = colors
+                .chunks(1) // 将数组切分为长度为4的块
+                .map(|chunk| {
+                    // 将每个块（RGBA值）转换为Vec4
+                    chunk[0] as f32 / 255.0
+                })
+                .collect();
             let colors_buffer = gl.create_buffer().unwrap();
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(colors_buffer));
             gl.buffer_data_u8_slice(
                 glow::ARRAY_BUFFER,
                 std::slice::from_raw_parts(
-                    colors.as_ptr() as *const u8,
-                    colors.len() * std::mem::size_of::<f32>(),
+                    normalized_colors.as_ptr() as *const u8,
+                    normalized_colors.len() * std::mem::size_of::<f32>(),
                 ),
                 glow::STATIC_DRAW,
             );
@@ -110,7 +115,7 @@ impl eframe::App for App {
                 1,           // index
                 4,           // size
                 glow::FLOAT, // type
-                false,       // normalized
+                true,        // normalized
                 0,           // stride
                 0,           // offset
             );
