@@ -8,5 +8,5 @@ out vec4 color;
 void main() {
     gl_Position = aPos;
     color = aColor;
-    texCoord = aTexCoord;
+    texCoord = vec2(aTexCoord.x, 1.0 - aTexCoord.y);
 }
