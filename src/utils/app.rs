@@ -1,5 +1,6 @@
 use crate::utils::creat::{compile_shader, link_program};
 use eframe::{egui, glow};
+use image::{DynamicImage, GenericImageView, EncodableLayout};
 
 fn setup_custom_fonts(ctx: &egui::Context) {
     let mut font = egui::FontDefinitions::default();
@@ -23,12 +24,21 @@ fn setup_custom_fonts(ctx: &egui::Context) {
 }
 
 #[derive(Default)]
-pub struct App {}
+pub struct App {
+    image: DynamicImage,
+    data: Vec<u8>,
+}
 
 impl App {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         setup_custom_fonts(&cc.egui_ctx);
-        Self {}
+        let image = image::open("assets/images/777.jpg").unwrap();
+        let data = image.clone().into_rgba8().as_bytes().to_vec();
+        println!("image size: {:?}", image.dimensions());
+        Self {
+            image,
+            data: data.clone(),
+        }
     }
 }
 
@@ -121,8 +131,68 @@ impl eframe::App for App {
             );
             gl.enable_vertex_attrib_array(1);
 
-            let u_color = gl.get_uniform_location(program.unwrap(), "u_color");
+            let text_coords: Vec<f32> = vec![
+                1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, // 顶点坐标
+            ];
+            let text_coords_buffer = gl.create_buffer().unwrap();
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(text_coords_buffer));
+            gl.buffer_data_u8_slice(
+                glow::ARRAY_BUFFER,
+                std::slice::from_raw_parts(
+                    text_coords.as_ptr() as *const u8,
+                    text_coords.len() * std::mem::size_of::<f32>(),
+                ),
+                glow::STATIC_DRAW,
+            );
+            gl.vertex_attrib_pointer_f32(
+                2,           // index
+                2,           // size
+                glow::FLOAT, // type
+                false,       // normalized
+                0,           // stride
+                0,           // offset
+            );
+            gl.enable_vertex_attrib_array(2);
+
+            let u_color = gl.get_uniform_location(program.clone().unwrap(), "u_color");
             gl.uniform_4_f32(u_color.as_ref(), 1.0, 1.0, 1.0, 1.0);
+
+            let texture = gl.create_texture().unwrap();
+            gl.active_texture(glow::TEXTURE0);
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_S,
+                glow::CLAMP_TO_EDGE as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_T,
+                glow::CLAMP_TO_EDGE as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::NEAREST as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::LINEAR as i32,
+            );
+            let (width, height) = self.image.dimensions();
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGBA8 as i32,
+                width as i32,
+                height as i32,
+                0,
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
+                Some(&self.data),
+            );
+            gl.generate_mipmap(glow::TEXTURE_2D);
 
             gl.viewport(0, 0, 768, 768);
             gl.clear_color(0.0, 0.0, 0.0, 0.0); // purple
